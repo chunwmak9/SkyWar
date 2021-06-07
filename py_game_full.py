@@ -23,8 +23,6 @@ import scoreboard
 
 # pygame.locals for easier access to key coordinates
 
-import random
-
 
 
 from pygame.locals import (
@@ -49,7 +47,7 @@ username="Benny"
 
 bg_index=0
 
-DIR =os.getcwd()+r"/Full_game"
+DIR =os.getcwd()
 backgrounds = [DIR+"/clear-blue-sky.jpg",DIR+"/Colourful.jpg",DIR+"/sci.jpg"]
 
 # parameters:    bg_index,username
@@ -70,24 +68,27 @@ bg_index = user_interface.bg_index
 #Name,Score,Health,Time,Exp,Level,Distance
 
 score_system = scoreboard.score_system([])
-if score_system.read_key(username).empty:
+if score_system.read_key(username).empty: #Some problem =>empty
     EXP = 0 # 2 exps per enemies
     Level = 0 #Level-up algorithms =>Level bar
     Distance = 50 #Time times velocity(50m/s) => meter
 else:
     df = score_system.read_key(username)
     EXP = int(df.iloc[-1]["Exp"])
-    Level = int(df.iloc[-1]["Level"])
+    # Read data from sorted data base
+    try:
+        Level = score_system.read_database()[score_system.read_database()["Name"] == username].iloc[-1]["Level"]
+    except:
+        Level = 0
+
+    #Level = int(df.iloc[-1]["Level"])
     Distance = 50
 
 
-#Read data from sorted data base
+print(score_system.read_key(username).empty)
 
 
-
-
-
-
+print("EXP %d"%(EXP))
 
 #######################################
 screen_width = 1366 # 800x600
@@ -128,12 +129,6 @@ plane_move_sound.set_volume(50)
 
 
 
-
-
-
-
-
-
 class player_health(pygame.sprite.Sprite):
     #self.surf=> what you see on screen       ,self.rect=>where you see on screen
     def __init__(self):
@@ -170,6 +165,46 @@ class player_health(pygame.sprite.Sprite):
         self.surf = self.image
 
 
+
+##############################################
+#EXPERIENCE SYSTEM
+
+class EXP_BAR(pygame.sprite.Sprite):
+    def __init__(self):
+        super(EXP_BAR,self).__init__()
+        self.scale_factor = 0
+        self.surf = pygame.Surface([(screen_width-600)*self.scale_factor,10])
+        self.surf.fill((255,165,0))
+        self.rect = self.surf.get_rect()
+
+    def update(self,scale):
+        self.scale_factor = scale
+        self.surf = pygame.Surface([(screen_width -600) * self.scale_factor,10])
+        if scale>0.7:
+            self.surf.fill((255, 69, 0))
+        else:
+            self.surf.fill((255, 165, 0))
+        self.rect = self.surf.get_rect()
+
+
+def exp_system(EXP,LV):
+    if EXP!=0:
+        LV = math.log(EXP,10)/math.log(2,10)
+        return LV
+    else:
+        return 0
+def level_scale(EXP):
+    if EXP!=0:
+        LV = math.log(EXP, 10) / math.log(2, 10)
+        scale = LV - int(LV)
+        return scale
+    else:
+        return 0
+
+
+
+
+########################################################
 
 class Player(pygame.sprite.Sprite): #The class of character
     def __init__(self):
@@ -325,12 +360,22 @@ class Explosion(pygame.sprite.Sprite):
 
 
 
+class Token(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Token, self).__init__()
+        self.surf = pygame.image.load(DIR+"/level_token.png").convert()
+        self.surf = pygame.transform.scale(self.surf,(200,200))
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(0,0))
 
 
+
+
+exp_bar = EXP_BAR()
 
 #Sprites creation area
 
-
+token = Token()
 
 
 health_bar = player_health()
@@ -388,17 +433,17 @@ life = 60 #Total life of character
 init_var = False
 
 def rank_title():
-    text_color = (128,0,0)
+    text_color =(255,69,0) #(128,0,0)
     head_font = pygame.font.SysFont(None, 40)
     text_surface = head_font.render("Player Ranking", True, text_color)
     screen.blit(text_surface, (screen_width / 2 - 100, 40))
 
 
 def rank_item(name,SCORE,pos,rank_number):
-    border_color = (255,0,0)
+    border_color = (255,69,0) #(255,0,0)
     pygame.draw.rect(screen,border_color,[0,0,screen_width,screen_height],width=10)
     pygame.display.flip()
-    text_color = (128,0,0)  #(255,0,0)-red ,(128,0,0)-maroon
+    text_color = (255,69,0) #(128,0,0)  #(255,0,0)-red ,(128,0,0)-maroon
     rank_font = pygame.font.SysFont(None, 40) #head_font can only be used for one time rendering
     #name1 = head_font.render(name, True, text_color)
     #score1 = head_font.render(str(score), True, text_color)
@@ -411,6 +456,10 @@ def rank_item(name,SCORE,pos,rank_number):
 
 
 
+level_font = pygame.font.SysFont(None, 20)
+level_surface = level_font.render("LEVEL: "+str(int(Level)), True, (0, 255, 0))
+
+
 ###############################################################################################################################################################
 
 
@@ -420,21 +469,20 @@ def rank_item(name,SCORE,pos,rank_number):
 
 
 
-
-
-
-
-
-
-
 while running:
+    scale_factor = level_scale(EXP)
+    Level = exp_system(EXP, Level)
+    level_surface = level_font.render("LEVEL: " + str(int(Level)), True, (0, 255, 0))
 
     Distance+=1
-    print(Distance)
+
+    print(str(Distance)+" meters")
+
+    username_color = (255,69,0)
     font = pygame.font.SysFont("arial", 30, True)
-    text = font.render("Score: " +str(score), 1, (0, 0, 0))
+    text = font.render("Score: " +str(score), 1, username_color)
     # Arguments are: text, anti-aliasing, color => It is a surface object for blit
-    user_text = font.render(username,1,(0,0,0))
+    user_text = font.render(username,1,username_color)
 
     # pygame control the time message through event list
     # Joysticks will send events
@@ -443,10 +491,12 @@ while running:
     #screen.fill((135, 206, 250))  # (R,G,B) Backgroud
 
     screen.blit(background, (0, 0))
-
+    screen.blit(token.surf,(0,screen_height-200))
+    screen.blit(level_surface, (70, screen_height - 120))
     ##Render the text Position
     screen.blit(user_text, (screen_width - 200, screen_height - 190))
     screen.blit(text, (screen_width - 200, screen_height - 150))
+    screen.blit(exp_bar.surf, (200, screen_height - 100))
 
     if init_var:
         print("Welcome to Sky War.")
@@ -506,6 +556,7 @@ while running:
                 explosion_sound.play()
                 explosion_sound.fadeout(500)
                 all_sprites.add(exp)
+                EXP+=1
                 new_enemy.kill()
                 bullet.kill()
     for new_enemy in enemies:
@@ -554,7 +605,7 @@ while running:
     #If the player
     bullets.update()
     explosion.update()
-
+    exp_bar.update(scale_factor)
 
     pygame.display.flip()
     clock.tick(40) #Maintain the speed of game at 40 frames per second
@@ -575,6 +626,15 @@ if Game_Finished== True:#Only Game is finished but not closed, EXP will be added
     EXP+=random.randint(1,26) #1 to 25 exp.
 else:
     EXP+=0
+
+
+
+
+
+Level = exp_system(EXP,Level)
+
+
+
 score_system.write([username,score,life,T,EXP,Level,Distance,bg_index])
 #Scoreboard
 rank_number = 1

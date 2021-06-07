@@ -143,7 +143,10 @@ class score_system:
             csv_file = open(csv_file.name, csv_file.mode)
             f = csv_file
             #df = None  # pd.read_csv(f)
-        return df
+        # if df[df["Name"]==key].empty == True:
+        #     return pd.DataFrame()
+        # else:
+        return df[df["Name"]==key]
         # if df is not None:
         #     try:
         #         df = df[df["Name"]==key]
@@ -249,13 +252,16 @@ if __name__ == "__main__":
     # while True:
     #     T = (time.time()-init_time)
     #     print(T)
-    DATA = SCORE_SYSTEM.read_database()
-    print(SCORE_SYSTEM.read_database()[DATA["Score"]==DATA["Score"].max()])
-    print(SCORE_SYSTEM.read_database()[DATA["Score"]==DATA["Score"].max()]["Name"]) #1st
-    print(SCORE_SYSTEM.read_database().nlargest(3,"Score"))
+    DATA = SCORE_SYSTEM.read_key("")
+    print(DATA)
+
+    # print(SCORE_SYSTEM.read_database()[DATA["Score"]==DATA["Score"].max()])
+    # print(SCORE_SYSTEM.read_database()[DATA["Score"]==DATA["Score"].max()]["Name"]) #1st
+    # print(SCORE_SYSTEM.read_database().nlargest(3,"Score"))
     # for i in SCORE_SYSTEM.read_database().nlargest(3,"Score")["Name"]:
     #     print(i)
-    print(SCORE_SYSTEM.read_database().nlargest(3,"Score")[["Name","Score"]].values)
-    for j in SCORE_SYSTEM.read_database().nlargest(3,"Score")[["Name","Score"]].values:
-        print(j[0])
-        print(j[1])
+    # print(SCORE_SYSTEM.read_database().nlargest(3,"Score")[["Name","Score"]].values)
+    # for j in SCORE_SYSTEM.read_database().nlargest(3,"Score")[["Name","Score"]].values:
+    #     print(j[0])
+    #     print(j[1])
+    #print(SCORE_SYSTEM.read_database()[SCORE_SYSTEM.read_database()["Name"]=="123"].iloc[-1])

@@ -8,7 +8,7 @@ username=""
 
 bg_index=0
 
-DIR =os.getcwd()+r"/Full_game"
+DIR =os.getcwd()
 backgrounds = [DIR+"/clear-blue-sky.jpg",DIR+"/Colourful.jpg",DIR+"/sci.jpg"]
 
 class TKbox(Tk):

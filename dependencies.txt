@@ -1,0 +1,8 @@
+
+Spyder:
+
+!pip install pygame
+!pip install Pillow
+
+
+"pyimage[n]" error => restart IPython by type "exit" in IPython console
