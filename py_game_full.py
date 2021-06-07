@@ -425,7 +425,8 @@ pygame.time.set_timer(ADDCLOUD,4000)
 clock = pygame.time.Clock()
 #Setup the clock for a decent frame rate of the game
 #print(backgrounds[1])
-background = pygame.image.load(backgrounds[bg_index]) #DIR+"/clear-blue-sky.jpg")
+
+background = pygame.image.load(backgrounds[bg_index])  
 background = pygame.transform.scale(background,(screen_width,screen_height ))
 
 
@@ -478,10 +479,12 @@ while running:
 
     print(str(Distance)+" meters")
 
-    username_color = (255,69,0)
+    
     font = pygame.font.SysFont("arial", 30, True)
+    username_color = (255,69,0)
     text = font.render("Score: " +str(score), 1, username_color)
     # Arguments are: text, anti-aliasing, color => It is a surface object for blit
+    
     user_text = font.render(username,1,username_color)
 
     # pygame control the time message through event list

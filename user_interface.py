@@ -64,5 +64,7 @@ class TKbox(Tk):
         self.label1.grid(row=2, column=1)
         bg_index = self.bgi
 
-
+if __name__ == "__main__":
+    #Create a test zone here for testing of this modular function
+    pass
 
