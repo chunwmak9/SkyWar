@@ -1,8 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image
-
 import os
-
 
 username=""
 
@@ -10,7 +8,6 @@ bg_index=0
 
 DIR =os.getcwd()
 backgrounds = [DIR+"/clear-blue-sky.jpg",DIR+"/Colourful.jpg",DIR+"/sci.jpg"]
-
 class TKbox(Tk):
     def __init__(self):
         super().__init__()
