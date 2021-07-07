@@ -20,6 +20,9 @@ import math
 
 import user_interface
 import scoreboard
+import user_menu
+
+
 
 # pygame.locals for easier access to key coordinates
 
@@ -107,6 +110,11 @@ attack_damage = 30  #Damage to exert to player
 #Pygame only support frame image and not support gif format photo
 
 
+##For linux computer: pip install "pygame==1.9.6"
+
+pygame.mixer.pre_init(44100, 16, 2, 4096)
+
+
 
 ####### Initialization of Sound Effects
 bg_musics = [DIR+"/Resources/FFbgMusic.mp3",DIR+"/Resources/Flying_me_softly.mp3"]
@@ -122,7 +130,7 @@ explosion_sound = pygame.mixer.Sound(DIR+"/Resources/explosion.wav")
 explosion_sound.set_volume(50)
 shoot_sound = pygame.mixer.Sound(DIR+"/Resources/shoot.wav")
 shoot_sound.set_volume(50)
-plane_move_sound = pygame.mixer.Sound(DIR+"/Resources/airplane.mp3")
+plane_move_sound = pygame.mixer.Sound(DIR+"/Resources/airplane.wav")
 plane_move_sound.set_volume(50)
 
 ########
@@ -433,6 +441,7 @@ background = pygame.transform.scale(background,(screen_width,screen_height ))
 life = 60 #Total life of character
 init_var = False
 
+
 def rank_title():
     text_color =(255,69,0) #(128,0,0)
     head_font = pygame.font.SysFont(None, 40)
@@ -442,7 +451,7 @@ def rank_title():
 
 def rank_item(name,SCORE,pos,rank_number):
     border_color = (255,69,0) #(255,0,0)
-    pygame.draw.rect(screen,border_color,[0,0,screen_width,screen_height],width=10)
+    pygame.draw.rect(screen,border_color,[0,0,screen_width,screen_height],10)
     pygame.display.flip()
     text_color = (255,69,0) #(128,0,0)  #(255,0,0)-red ,(128,0,0)-maroon
     rank_font = pygame.font.SysFont(None, 40) #head_font can only be used for one time rendering
@@ -471,6 +480,7 @@ level_surface = level_font.render("LEVEL: "+str(int(Level)), True, (0, 255, 0))
 
 
 while running:
+
     scale_factor = level_scale(EXP)
     Level = exp_system(EXP, Level)
     level_surface = level_font.render("LEVEL: " + str(int(Level)), True, (0, 255, 0))
@@ -513,7 +523,20 @@ while running:
         if event.type == KEYDOWN:
             print("key down")
             if event.key == K_ESCAPE:
-                running = False
+#####################################################################################################################################
+                #USER MENU
+                MENU = user_menu.user_menu(screen)
+                if MENU.menu(background) == False:
+                    running = True
+                else:
+                    running = False
+                    
+                
+                
+                
+                
+#####################################################################################################################################
+                #running = False
             elif event.key == pygame.K_SPACE:
                 bullet = Bullet(player1.rect.left, player1.rect.top)
                 if bullet not in bullets:
@@ -575,12 +598,12 @@ while running:
                 player1.kill()
                 pygame.mixer.music.stop()
                 pygame.mixer.quit()
-
                 Tk().wm_withdraw()  # To hide the main window
                 messagebox.showinfo('Game Over', 'OK')
                 running = False
                 Game_Finished = True
-
+    
+    
     # if pygame.sprite.spritecollideany(player1,enemies): #Collide with enemies sprites group
     #     life-=1
     #     print(life)
@@ -612,7 +635,7 @@ while running:
 
     pygame.display.flip()
     clock.tick(40) #Maintain the speed of game at 40 frames per second
-
+    
 
     #flip() =>update the whole display     vs update() => can update the specific area with argument
 
