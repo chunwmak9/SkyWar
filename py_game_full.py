@@ -20,8 +20,8 @@ import math
 
 import user_interface
 import scoreboard
-import user_menu
-
+#import user_menu
+import sys
 
 
 # pygame.locals for easier access to key coordinates
